@@ -1,5 +1,7 @@
 import { BrowserRouter, Link, NavLink, Route, Routes, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import './App.css';
+import { LanguageProvider, useI18n } from './i18n';
 
 const prices = [
   { crop: 'Wheat', price: '₹2,450', change: '+3.2%', trend: 'up', location: 'Hyderabad' },
@@ -14,19 +16,21 @@ const buyers = [
 ];
 
 function PageShell({ children, farmer = false }) {
+  const { language, setLanguage, t } = useI18n();
   return (
     <div className="app-shell">
       <header className="topbar">
         <Link className="brand" to="/">Agri<span>Intel</span></Link>
         <nav className="main-nav" aria-label="Main navigation">
-          <NavLink to="/" end>Home</NavLink>
-          <NavLink to="/crop-prediction">Crop Prediction</NavLink>
-          <NavLink to="/price-prediction">Price Prediction</NavLink>
+          <NavLink to="/" end>{t('home')}</NavLink>
+          <NavLink to="/crop-prediction">{t('cropPrediction')}</NavLink>
+          <NavLink to="/price-prediction">{t('pricePrediction')}</NavLink>
         </nav>
         <div className="header-actions">
-          {farmer && <span className="verified-badge">✓ Verified Farmer</span>}
-          <Link className="button button-quiet" to="/buyer/login">Buyer Login</Link>
-          <Link className="button button-primary compact" to="/admin/login">Admin Login</Link>
+          {farmer && <><span className="verified-badge">✓ {t('verified')}</span><Link className="support-link" to="/farmer-support">{t('farmerSupport')}</Link></>}
+          <button className="language-toggle" onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')} type="button">{t('language')}</button>
+          <Link className="button button-quiet" to="/buyer/login">{t('buyerLogin')}</Link>
+          <Link className="button button-primary compact" to="/admin/login">{t('adminLogin')}</Link>
         </div>
       </header>
       <main>{children}</main>
@@ -50,20 +54,21 @@ function PriceCard({ item }) {
 }
 
 function Home() {
+  const { t } = useI18n();
   return (
     <PageShell>
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Better decisions, season after season</p>
-          <h1>Know your crop.<br /><em>Know your market.</em></h1>
-          <p>Clear mandi prices, useful predictions, and buyer access built for Indian farmers.</p>
-          <div className="hero-actions"><Link className="button button-primary" to="/crop-prediction">Explore tools <span>→</span></Link><a className="text-link" href="#prices">View live prices ↓</a></div>
+          <p className="eyebrow">{t('welcome')}</p>
+          <h1>{t('heroTitle')}</h1>
+          <p>{t('heroText')}</p>
+          <div className="hero-actions"><Link className="button button-primary" to="/crop-prediction">{t('explore')} <span>→</span></Link><a className="text-link" href="#prices">{t('livePrices')} ↓</a></div>
         </div>
         <div className="hero-visual"><div className="sun" /><div className="landscape-field field-one" /><div className="landscape-field field-two" /><div className="hero-note"><span>Today’s market</span><strong>Prices updated</strong><small>Across Telangana mandis</small></div></div>
       </section>
 
       <section className="content-section" id="prices">
-        <div className="section-heading"><div><p className="eyebrow">Today’s snapshot</p><h2>Live crop prices</h2></div><span className="updated-dot">● Updated today</span></div>
+        <div className="section-heading"><div><p className="eyebrow">Today’s snapshot</p><h2>{t('livePrices')}</h2></div><span className="updated-dot">● {t('updated')}</span></div>
         <div className="price-grid">{prices.map((item) => <PriceCard item={item} key={item.crop} />)}</div>
       </section>
 
@@ -78,6 +83,10 @@ function Home() {
       <section className="farmer-cta">
         <div><p className="eyebrow">Verified access</p><h2>Ready to connect with buyers?</h2><p>Buyer details stay protected. Sign in with your official Farmer ID to view and contact verified buyers.</p></div>
         <Link className="button button-primary" to="/farmer-login">Farmer Login <span>→</span></Link>
+      </section>
+      <section className="support-cta">
+        <div><p className="eyebrow">{t('supportTitle')}</p><h2>{t('supportText')}</h2><p className="service-note">Service-only feature. It does not create an NGO account or share buyer information.</p></div>
+        <Link className="button button-light" to="/farmer-support">{t('contactSupport')} <span>→</span></Link>
       </section>
     </PageShell>
   );
@@ -101,6 +110,12 @@ function VerifiedPricePrediction() {
   return <PageShell farmer><section className="page-intro compact-intro"><p className="eyebrow">Verified farmer workspace</p><h1>Your price outlook and buyer opportunities.</h1><p>These are sample listings for the frontend demo.</p></section><section className="verified-layout"><div className="forecast-card"><p className="eyebrow">Wheat forecast</p><h2>Expected mandi range</h2><p className="forecast-price">₹2,480–₹2,560 <span>/ quintal</span></p><p className="positive-text">↑ Positive short-term trend</p><div className="chart"><i /><i /><i /><i /><i /><i /></div></div><div className="buyers-panel"><div className="section-heading"><div><p className="eyebrow">Protected listings</p><h2>Verified buyers</h2></div></div>{buyers.map((buyer) => <article className="buyer-row" key={buyer.name}><div><h3>{buyer.name}</h3><p>{buyer.crop} · {buyer.need} · {buyer.place}</p></div><div className="buyer-offer"><strong>{buyer.offer}</strong><button className="small-button">Contact buyer</button></div></article>)}</div></section></PageShell>;
 }
 
+function FarmerSupport() {
+  const { t } = useI18n();
+  const [submitted, setSubmitted] = useState(false);
+  return <PageShell farmer><section className="page-intro"><p className="eyebrow">{t('supportEyebrow')}</p><h1>{t('supportPageTitle')}</h1><p>{t('supportPageText')}</p></section><section className="split-page"><form className="panel form-panel" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}><Select label={t('district')} options={['Select district', 'Hyderabad', 'Warangal', 'Nizamabad', 'Karimnagar']} /><Select label={t('supportType')} options={['Select support type', 'Crop guidance', 'Market access', 'Government scheme guidance', 'Soil or irrigation support']} /><Input label={t('description')} placeholder="Briefly describe the help you need" /><button className="button button-primary full" type="submit">{t('requestSupport')} <span>→</span></button></form><aside className="recommendation support-result"><p className="eyebrow">{submitted ? t('requestSent') : t('supportTitle')}</p><span className="recommendation-icon">🤝</span><h2>{submitted ? t('requestSentText') : t('supportText')}</h2><p>Nearest-organisation matching will use a trusted NGO directory and the farmer’s verified location when those backend data sources are available.</p><div className="tip"><strong>Privacy</strong><span>Your Farmer ID and buyer information are not shared through this support service.</span></div></aside></section></PageShell>;
+}
+
 function BuyerLogin() {
   const navigate = useNavigate();
   const submit = (event) => { event.preventDefault(); navigate('/buyer/portal'); };
@@ -112,7 +127,14 @@ function BuyerSignup() {
 }
 
 function BuyerPortal() {
-  return <PageShell><section className="dashboard-header"><div><p className="eyebrow">Buyer portal</p><h1>Good morning, Siri Grains.</h1><p>Manage your current crop requirements.</p></div><button className="button button-primary">+ Post requirement</button></section><section className="stat-grid"><Stat label="Active requirements" value="3" note="Across 3 crops" /><Stat label="Farmer enquiries" value="18" note="This week" /><Stat label="Verified responses" value="12" note="Ready to review" /></section><section className="panel listing-panel"><div className="section-heading"><div><p className="eyebrow">Your listings</p><h2>Active requirements</h2></div><button className="button button-light compact">Filter</button></div>{buyers.map((buyer) => <article className="buyer-row" key={buyer.name}><div><h3>{buyer.crop} requirement</h3><p>{buyer.need} · Delivery near {buyer.place}</p></div><div className="buyer-offer"><strong>{buyer.offer}</strong><button className="small-button">Edit listing</button></div></article>)}</section></PageShell>;
+  const { t } = useI18n();
+  return <PageShell><section className="dashboard-header"><div><p className="eyebrow">Buyer portal</p><h1>Good morning, Siri Grains.</h1><p>Manage your current crop requirements.</p></div><Link className="button button-primary" to="/buyer/requirements/new">+ {t('postRequirement')}</Link></section><section className="stat-grid"><Stat label="Active requirements" value="3" note="Across 3 crops" /><Stat label="Farmer enquiries" value="18" note="This week" /><Stat label="Verified responses" value="12" note="Ready to review" /></section><section className="panel listing-panel"><div className="section-heading"><div><p className="eyebrow">Your listings</p><h2>Active requirements</h2></div><button className="button button-light compact">Filter</button></div>{buyers.map((buyer) => <article className="buyer-row" key={buyer.name}><div><h3>{buyer.crop} requirement</h3><p>{buyer.need} · Delivery near {buyer.place}</p></div><div className="buyer-offer"><strong>{buyer.offer}</strong><button className="small-button">Edit listing</button></div></article>)}</section></PageShell>;
+}
+
+function NewBuyerRequirement() {
+  const { t } = useI18n();
+  const [posted, setPosted] = useState(false);
+  return <PageShell><section className="page-intro"><p className="eyebrow">Buyer portal</p><h1>{t('requirementTitle')}</h1><p>{t('requirementText')}</p></section><section className="split-page"><form className="panel form-panel" onSubmit={(event) => { event.preventDefault(); setPosted(true); }}><Select label={t('cropCategory')} options={['Select category', t('mainCrop'), t('byProduct')]} /><Select label={t('crop')} options={['Select product', 'Wheat', 'Rice', 'Cotton', 'Maize', 'Rice Husk', 'Paddy Straw', 'Sugarcane Bagasse']} /><Select label={t('location')} options={['Select location', 'Hyderabad', 'Warangal', 'Nizamabad', 'Karimnagar']} /><Input label={t('quantity')} placeholder="e.g. 500 quintals" /><Input label="Target price" placeholder="e.g. ₹2,500 / quintal" /><button className="button button-primary full" type="submit">{t('postRequirement')} <span>→</span></button></form><aside className="recommendation support-result"><p className="eyebrow">{posted ? 'Requirement ready' : 'Structured matching'}</p><span className="recommendation-icon">📋</span><h2>{posted ? 'Your sample requirement has been created.' : 'Use standard values for better matches.'}</h2><p>Crop, by-product, and location choices are controlled so buyer-farmer matching is not affected by spelling variations.</p><div className="tip"><strong>Next integration</strong><span>This form will submit to POST /api/requests after buyer JWT authentication is connected.</span></div></aside></section></PageShell>;
 }
 
 function AdminLogin() {
@@ -131,7 +153,7 @@ function Select({ label, options }) { return <label className="field"><span>{lab
 function Stat({ label, value, note }) { return <article className="stat-card"><p>{label}</p><strong>{value}</strong><span>{note}</span></article>; }
 
 function App() {
-  return <BrowserRouter><Routes><Route path="/" element={<Home />} /><Route path="/farmer-login" element={<FarmerLogin />} /><Route path="/crop-prediction" element={<CropPrediction />} /><Route path="/price-prediction" element={<PricePredictionGuest />} /><Route path="/price-prediction/verified" element={<VerifiedPricePrediction />} /><Route path="/buyer/login" element={<BuyerLogin />} /><Route path="/buyer/signup" element={<BuyerSignup />} /><Route path="/buyer/portal" element={<BuyerPortal />} /><Route path="/admin/login" element={<AdminLogin />} /><Route path="/admin/portal" element={<AdminPortal />} /></Routes></BrowserRouter>;
+  return <LanguageProvider><BrowserRouter><Routes><Route path="/" element={<Home />} /><Route path="/farmer-login" element={<FarmerLogin />} /><Route path="/farmer-support" element={<FarmerSupport />} /><Route path="/crop-prediction" element={<CropPrediction />} /><Route path="/price-prediction" element={<PricePredictionGuest />} /><Route path="/price-prediction/verified" element={<VerifiedPricePrediction />} /><Route path="/buyer/login" element={<BuyerLogin />} /><Route path="/buyer/signup" element={<BuyerSignup />} /><Route path="/buyer/portal" element={<BuyerPortal />} /><Route path="/buyer/requirements/new" element={<NewBuyerRequirement />} /><Route path="/admin/login" element={<AdminLogin />} /><Route path="/admin/portal" element={<AdminPortal />} /></Routes></BrowserRouter></LanguageProvider>;
 }
 
 export default App;
