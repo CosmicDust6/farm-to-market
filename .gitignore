@@ -13,6 +13,10 @@ venv/
 # IDE
 .vscode/
 
+# Database
+*.db
+*.sqlite3
+
 # ML models (we can change this later)
 *.pkl
-*.joblib
+*.joblib
