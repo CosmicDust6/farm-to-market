@@ -615,7 +615,21 @@ function VerifiedPricePrediction() {
         <p className="eyebrow">{t('verifiedFarmerWorkspace')}</p>
         <h1>{t('yourPriceOutlook')}</h1>
         <p>Real-time price forecasts connected to verified active buyers in the network.</p>
-        <div style={{ display: 'flex', gap: '16px', marginTop: '16px', alignItems: 'center' }}>
+
+        <div style={{ background: '#eaf5e9', border: '1px solid #b8dfb4', borderRadius: '14px', padding: '16px 20px', marginTop: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <span style={{ fontSize: '28px' }}>📞</span>
+            <div>
+              <strong style={{ color: '#0d631b', fontSize: '15px' }}>Farmer Help & Support Contact</strong>
+              <p style={{ margin: '2px 0 0', color: '#5c695e', fontSize: '13px' }}>For further queries, assistance, or crop advisories, contact our helpline at <strong>09513886363</strong>.</p>
+            </div>
+          </div>
+          <a href="tel:09513886363" className="button button-primary compact" style={{ textDecoration: 'none' }}>
+            Call 09513886363 <span>→</span>
+          </a>
+        </div>
+
+        <div style={{ display: 'flex', gap: '16px', marginTop: '20px', alignItems: 'center' }}>
           <label className="field" style={{ marginBottom: 0 }}>
             <span>Select Crop:</span>
             <select value={selectedCrop} onChange={(e) => setSelectedCrop(e.target.value)}>
@@ -643,6 +657,7 @@ function VerifiedPricePrediction() {
           </button>
         </div>
       </section>
+
 
       {listingMsg && <div className="success-banner" style={{ margin: '0 32px 16px' }}>{listingMsg}</div>}
 
@@ -873,10 +888,16 @@ function FarmerSupport() {
           )}
 
           <div className="tip">
+            <strong>Direct Helpline</strong>
+            <span>For urgent assistance or questions, dial <a href="tel:09513886363" style={{ color: 'var(--green)', fontWeight: 'bold' }}>09513886363</a> directly.</span>
+          </div>
+
+          <div className="tip">
             <strong>{t('privacyLabel')}</strong>
             <span>{t('privacyNote')}</span>
           </div>
         </aside>
+
       </section>
     </PageShell>
   );
